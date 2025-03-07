@@ -24,4 +24,21 @@ ENTRYPTION_ALGORITHM = 'AES'
 ENTRYPTION_KEY = hashlib.sha256(os.getenv('ENTRYPTION_KEY', 'default').encode()).hexdigest()
 ENTRYPTION_IV_LENGTH = 16
 
-def encrypt(text: str)
+def encrypt(text: str) -> str:
+    try:
+        iv = get_random_bytes(ENTRYPTION_IV_LENGTH)
+        cipher = AES.new(ENTRYPTION_KEY, AES.MODE_CBC, iv)
+
+        pad_len = 16 - (len(text % 16))
+        padded_text = text + chr(pad_len) * pad_len
+        encrypted = cipher.encrypt(padded_text.encode())
+
+        result = base64.b64encode(iv + encrypted).decode()
+        log_json("info", "Data encrypted successfully")
+        return result
+    except Exception as e:
+        log_json("error", "Encyption failed", error = str(e))
+        return ""
+
+
+
