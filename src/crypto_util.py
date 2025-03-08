@@ -40,20 +40,22 @@ def encrypt(text: str) -> str:
         log_json("error", "Encyption failed", error = str(e))
         return ""
 
+def decryption(text: str) -> str:
+    try:
+        data = base64.b64decode(text)
+        iv, encrypted = data[:ENTRYPTION_IV_LENGTH], data[ENTRYPTION_IV_LENGTH]
+        cipher = AES.new(ENTRYPTION_KEY, AES.MODE_CBC, iv)
+        decrypted_padded = cipher.decrypt(encrypted).decode()
+        pad_len = ord(decrypted_padded[-1])
+        decrypted = decrypted_padded[:-pad_len]
 
-    def decryption(text: str) -> str:
-        try:
-            data = base64.b64decode(text)
-            iv, encrypted = data[:ENTRYPTION_IV_LENGTH], data[ENTRYPTION_IV_LENGTH]
-            cipher = AES.new(ENTRYPTION_KEY, AES.MODE_CBC, iv)
-            decrypted_padded = cipher.decrypt(encrypted).decode()
-            pad_len = ord(decrypted_padded[-1])
-            decrypted = decrypted_padded[:-pad_len]
+        log_json("info", "Data decrypted successfully")
+        return decrypted
 
-            log_json("info", "Data decrypted successfully")
-            return decrypted
-        except Exception as e:
-            log_json("error", "Decryption failed", error = str(e))
-            return ""
+    except Exception as e:
+        log_json("error", "Decryption failed", error = str(e))
+        return ""
+
+
 
 
