@@ -19,4 +19,20 @@ def log_json(level, message, **kwargs):
 Base =  declarative()
 
 
+class EncryptionSub:
+    @staticmethod
+    def encrypt_sens_fields(mapper, connection, target):
+        for field in target.__table__.columns.keys():
+            value = getattr(target, field)
+            if isinstance(value,str):
+                setattr(target, field, encrypt(value))
+            log_json("info", "Data encrypted before insert/ubpdate", entity = str(target))
+
+    @staticmethod
+    def decrypt_sens_fields(target, context):
+        for field in target.__table__.columns.keys():
+            value = getattr(target, field)
+            if isinstance(value, str):
+                setattr(target, field, decryption(value))
+            log_json("info", "Data decrypted after select", entity = str(target))
 
