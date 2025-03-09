@@ -36,3 +36,12 @@ class EncryptionSub:
                 setattr(target, field, decryption(value))
             log_json("info", "Data decrypted after select", entity = str(target))
 
+@listeners_for(Base, "before_inspet")
+@listeners_for(Base, "before_update")
+
+def before_inspert_update(mapper, connection, target):
+    EncryptionSub.encrypt_sens_fields(mapper, connection, target)
+
+@listeners_for(Base, "load")
+def after_select(target, context):
+    EncryptionSub.decrypt_sens_fields(target, context)
